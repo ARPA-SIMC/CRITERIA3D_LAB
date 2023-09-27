@@ -90,8 +90,15 @@ def main():
 
     obsFileName = os.path.join(stateFolder, "obsWP.csv")
     if C3DParameters.isPeriodicAssimilation or C3DParameters.isFirstAssimilation:
-        print("Read observed water potential...")
-        obsWaterPotential = pd.read_csv(os.path.join(obsDataFolder, "waterPotential.csv"))
+        obsWaterPotentialFileName = os.path.join(obsDataFolder, "waterPotential.csv")
+        if os.path.exists(obsWaterPotentialFileName):
+            print("Read observed water potential...")
+            obsWaterPotential = pd.read_csv(obsWaterPotentialFileName)
+        else:
+            print("WARNING: observed water potential file does not exist!")
+            print("*** The assimilation procedure will be deactivated.")
+            C3DParameters.isPeriodicAssimilation = False
+            C3DParameters.isFirstAssimilation = False
 
     # first assimilation
     weatherIndex = 0

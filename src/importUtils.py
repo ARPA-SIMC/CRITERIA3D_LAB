@@ -42,7 +42,7 @@ def configToDict(settingsFilename):
 
 def readModelParameters(settingsFilename):
     configDict = configToDict(settingsFilename)
-    print(f"model parameters: {configDict}")
+    # print(f"model parameters: {configDict}")
 
     try:
         C3DParameters.waterRetentionCurve = configDict['model']['waterRetentionCurve']
@@ -293,7 +293,7 @@ def readModelParameters(settingsFilename):
 
 def readFieldParameters(fieldSettingsFilename):
     configDict = configToDict(fieldSettingsFilename)
-    print(f"field parameters: {configDict}")
+    # print(f"field parameters: {configDict}")
 
     # [location]
     try:
@@ -372,7 +372,7 @@ def readFieldParameters(fieldSettingsFilename):
     print("Building rectangle mesh...")
     rectangularMesh.rectangularMeshCreation()
     print("Nr. of rectangles:", C3DStructure.nrRectangles)
-    print("Total area [m^2]:", C3DStructure.totalArea)
+    print("Total area [m^2]:", format(C3DStructure.totalArea, ".4f"))
 
     # set [plant]
     plantIndices.clear()

@@ -8,14 +8,16 @@ outputIndices = []
 outputSurfaceIndices = []
 outputFileWP = ""
 outputFileWC = ""
+outputFileBalance = ""
 heightSlice = C3DStructure.gridHeight * 0.5
 oneTimestampPerRow = True
 
 
 def createExportFile(outputPath):
-    global outputFileWP, outputFileWC
-    outputFileWP = os.path.join(outputPath, "outputWaterPotential.csv")
-    outputFileWC = os.path.join(outputPath, "outputWaterContent.csv")
+    global outputFileWP, outputFileWC, outputFileBalance
+    outputFileWP = os.path.join(outputPath, "waterPotential.csv")
+    outputFileWC = os.path.join(outputPath, "waterContent.csv")
+    outputFileBalance = os.path.join(outputPath, "waterBalance.csv")
 
     if oneTimestampPerRow:
         outputPoints = pd.read_csv(os.path.join(outputPath, "output_points.csv"))

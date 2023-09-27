@@ -1,6 +1,6 @@
 # CRITERIA3D Lab
 Python version of CRITERIA-3D agro-hydrological model.  
-Allows to configure 1D, 2D and 3D hydrological experiments.  
+It allows to configure 1D, 2D and 3D hydrological experiments.  
 
 ![](https://github.com/ARPA-SIMC/CRITERIA3D_LAB/blob/main/doc/criteria3d.png)
 

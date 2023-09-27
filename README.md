@@ -10,9 +10,14 @@ Python version of CRITERIA-3D agro-hydrological model
 - pandas
 
 ## How to compile solverC.pyx
-Requires Cython and a C compiler, on Windows you can use MinGW or Visual Studio compiler.  
+Requires Cython library and a C compiler, on Windows you can use MinGW or Visual Studio compiler.  
 >cd src  
 >python cythonSetup.py build_ext --inplace
+ 
+If Cython library is missing, you can execute code set:  
+> CYTHON = False
+
+in the **commonConst.py** module.
 
 ## Authors
 - Fausto Tomei    <ftomei@arpae.it>

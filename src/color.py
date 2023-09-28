@@ -117,7 +117,7 @@ def getRootColor(rootDensity, minimum, maximum):
 def getMatricPotentialColor(signPsi):
     signPsi *= 9.81     # [kPa]
     if signPsi > -0.1:
-        return 0.3, 0, 1
+        return 0.5, 0, 1
     elif signPsi > -1.0:
         return 0, 0, 1
     elif signPsi > -5.0:

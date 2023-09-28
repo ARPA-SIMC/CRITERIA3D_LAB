@@ -92,6 +92,12 @@ def SetCellLink(i, linkIndex, direction, interfaceArea):
 
 def initializeMesh():
     print("Set cell properties...")
+    watertableDepth = NODATA
+    if C3DParameters.isWaterTable:
+        watertableDepth = C3DStructure.elevation + C3DParameters.waterTableDepth
+    if C3DParameters.isSaturatedLayer:
+        watertableDepth = C3DStructure.elevation + C3DParameters.saturatedDepth
+
     for i in range(C3DStructure.nrRectangles):
         [x, y, z] = rectangularMesh.C3DRM[i].centroid
         for layer in range(C3DStructure.nrLayers):
@@ -120,8 +126,10 @@ def initializeMesh():
                 else:
                     setCellProperties(index, False, BOUNDARY_NONE)
 
-                setMatricPotential(index, C3DParameters.initialWaterPotential)
-
+                if elevation > watertableDepth:
+                    setMatricPotential(index, C3DParameters.initialWaterPotential)
+                else:
+                    setMatricPotential(index, watertableDepth - elevation)
             else:
                 if rectangularMesh.C3DRM[i].isBoundary and C3DParameters.isFreeLateralDrainage:
                     setCellProperties(index, False, BOUNDARY_FREELATERALDRAINAGE)
@@ -130,7 +138,10 @@ def initializeMesh():
                 else:
                     setCellProperties(index, False, BOUNDARY_NONE)
 
-                setMatricPotential(index, C3DParameters.initialWaterPotential)
+                if elevation > watertableDepth:
+                    setMatricPotential(index, C3DParameters.initialWaterPotential)
+                else:
+                    setMatricPotential(index, watertableDepth - elevation)
 
     print("Set links...")
     for i in range(C3DStructure.nrRectangles):

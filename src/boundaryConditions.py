@@ -28,7 +28,7 @@ def updateBoundary(deltaT):
                 thetaSat = soil.horizons[C3DCells[i].horizonIndex].thetaS
                 if currentWC < thetaSat:
                     deltaWC = (thetaSat - currentWC) * C3DCells[i].volume
-                    C3DCells[i].flow += deltaWC / deltaT
+                     # C3DCells[i].flow += deltaWC / deltaT
 
         if C3DCells[i].boundary.type != BOUNDARY_NONE:
             slope = C3DCells[i].boundary.slope

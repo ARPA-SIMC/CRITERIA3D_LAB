@@ -339,7 +339,3 @@ def computeEquilibrium():
         else:
             MBR = abs(deltaStorage) / previousStorage
         previousStorage = waterBalance.currentStep.waterStorage
-
-    waterBalance.initializeBalance()
-    if isRedraw:
-        visual3D.redraw()

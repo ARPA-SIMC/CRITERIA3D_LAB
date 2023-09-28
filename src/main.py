@@ -57,14 +57,20 @@ def main():
     print("Nr. of cells: ", C3DStructure.nrCells)
 
     # initialize crop
-    if not C3DParameters.computeTranspiration:
-        crop.setNoCrop()
+    if C3DParameters.computeTranspiration:
+        cropSettingsFilename = os.path.join(obsDataFolder, "crop.ini")
+        if os.path.exists(cropSettingsFilename):
+            print("Read crop settings...")
+            if not importUtils.readCropParameters(cropSettingsFilename):
+                return
+            crop.initializeCrop()
+        else:
+            print("WARNING: crop settings file does not exist!")
+            print("*** The transpiration process will be deactivated.")
+            C3DParameters.computeTranspiration = False
+            crop.setNoCrop()
     else:
-        print("Read crop settings...")
-        cropSettings = os.path.join(settingsFolder, "crop.ini")
-        if not importUtils.readCropParameters(cropSettings):
-            return
-        crop.initializeCrop()
+        crop.setNoCrop()
 
     print("Initialize mesh...")
     criteria3D.initializeMesh()
@@ -126,8 +132,12 @@ def main():
                 criteria3D.computeEquilibrium()
                 visual3D.isComputeEquilibrium = False
 
-    # main cycle
     print("Start...")
+    waterBalance.initializeBalance()
+    if C3DParameters.isVisual:
+        visual3D.redraw()
+
+    # main cycle
     currentIndex = 1
     lastIndex = min(len(weatherData), len(waterData))
     while weatherIndex < lastIndex:

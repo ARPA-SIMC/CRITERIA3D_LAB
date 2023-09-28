@@ -117,7 +117,7 @@ def initialize(totalWidth):
     sliceCanvas.caption += "\n\n 'c': set Colorscale range"
     sliceCanvas.caption += "\n 'w': view Water content/potential"
     sliceCanvas.caption += "\n 'd': view root Density"
-    sliceCanvas.caption += "\n 'o': view Output point"
+    sliceCanvas.caption += "\n 'o': view Output points"
 
     drawSlice(True)
     updateInterface()
@@ -188,7 +188,7 @@ def drawColorScale():
         colorScale[i].text = "Dripper"
         i -= 1
         colorScale[i].background = visual.color.red
-        colorScale[i].text = "Sensor"
+        colorScale[i].text = "Output "
         for j in range(i):
             colorScale[j].visible = False
     else:
@@ -436,7 +436,7 @@ def drawSurface(isFirst):
     # label
     if visualizedLayer == 0:
         if isPointVisualization:
-            layerLabel.text = "Output points"
+            layerLabel.text = "Drippers and Output position"
         elif isRootVisualization:
             layerLabel.text = "Root factor"
         else:

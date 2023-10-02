@@ -169,14 +169,6 @@ def readModelParameters(settingsFilename):
         print("The default will be set: waterTableDepth = -3.0 [m]")
         C3DParameters.waterTableDepth = -3.0
 
-    try:
-        C3DParameters.saturatedDepth = configDict['initial_conditions']['saturatedDepth']
-    except:
-        if C3DParameters.isSaturatedLayer:
-            print("WARNING!\nWrong or missing initial_conditions.saturatedDepth in the model settings: " + settingsFilename)
-            print("The default will be set: saturatedDepth = -3.0 [m]")
-        C3DParameters.saturatedDepth = -3.0
-
     # [surface_properties]
     try:
         C3DParameters.roughness = configDict['surface_properties']['roughness']

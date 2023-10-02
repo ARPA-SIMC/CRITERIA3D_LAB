@@ -92,11 +92,10 @@ def SetCellLink(i, linkIndex, direction, interfaceArea):
 
 def initializeMesh():
     print("Set cell properties...")
-    watertableDepth = NODATA
+    totalPotential = C3DStructure.elevation + C3DParameters.initialWaterPotential
+    waterTableDepth = NODATA
     if C3DParameters.isWaterTable:
-        watertableDepth = C3DStructure.elevation + C3DParameters.waterTableDepth
-    if C3DParameters.isSaturatedLayer:
-        watertableDepth = C3DStructure.elevation + C3DParameters.saturatedDepth
+        waterTableDepth = C3DStructure.elevation + C3DParameters.waterTableDepth
 
     for i in range(C3DStructure.nrRectangles):
         [x, y, z] = rectangularMesh.C3DRM[i].centroid
@@ -115,7 +114,7 @@ def initializeMesh():
                 else:
                     setCellProperties(index, True, BOUNDARY_NONE)
 
-                setMatricPotential(index, 0.0)
+                setMatricPotential(index, max(C3DParameters.initialWaterPotential, 0.0))
 
             elif layer == (C3DStructure.nrLayers - 1):
                 # last layer
@@ -126,10 +125,7 @@ def initializeMesh():
                 else:
                     setCellProperties(index, False, BOUNDARY_NONE)
 
-                if elevation > watertableDepth:
-                    setMatricPotential(index, C3DParameters.initialWaterPotential)
-                else:
-                    setMatricPotential(index, watertableDepth - elevation)
+                setTotalPotential(index, max(totalPotential, waterTableDepth))
             else:
                 if rectangularMesh.C3DRM[i].isBoundary and C3DParameters.isFreeLateralDrainage:
                     setCellProperties(index, False, BOUNDARY_FREELATERALDRAINAGE)
@@ -138,10 +134,7 @@ def initializeMesh():
                 else:
                     setCellProperties(index, False, BOUNDARY_NONE)
 
-                if elevation > watertableDepth:
-                    setMatricPotential(index, C3DParameters.initialWaterPotential)
-                else:
-                    setMatricPotential(index, watertableDepth - elevation)
+                setTotalPotential(index, max(totalPotential, waterTableDepth))
 
     print("Set links...")
     for i in range(C3DStructure.nrRectangles):
@@ -171,6 +164,19 @@ def initializeMesh():
             index = C3DStructure.nrRectangles * layer + i
             linkIndex = index + C3DStructure.nrRectangles
             SetCellLink(index, linkIndex, DOWN, exchangeArea)
+
+
+def setTotalPotential(i, totalPotential):
+    if C3DCells[i].isSurface:
+        C3DCells[i].H = max(totalPotential, 0.0)
+        C3DCells[i].Se = 1.
+        C3DCells[i].k = soil.horizons[0].Ks
+    else:
+        C3DCells[i].H = totalPotential
+        C3DCells[i].Se = soil.getDegreeOfSaturation(i)
+        C3DCells[i].k = soil.getHydraulicConductivity(i)
+    C3DCells[i].H0 = C3DCells[i].H
+    return OK
 
 
 def setMatricPotential(i, signPsi):
@@ -340,13 +346,24 @@ def computeOneHour(obsWeather, obsWater, transmissivity):
 def computeEquilibrium():
     initializeSinkSource(ALL)
     previousStorage = waterBalance.currentStep.waterStorage
+    previousWaterFlow = waterBalance.allSimulation.waterFlow
     MBR = 999
+    hour = 0
+    print("hour:" + str(hour) + " water storage [m3]:" + format(previousStorage, ".6f"))
     while MBR > EPSILON:
         computeWaterFlow(3600)
+        hour += 1
+        currentStorage = waterBalance.currentStep.waterStorage
+        deltaStorage = currentStorage - previousStorage
 
-        deltaStorage = waterBalance.currentStep.waterStorage - previousStorage
         if previousStorage == 0:
             MBR = abs(deltaStorage)
         else:
             MBR = abs(deltaStorage) / previousStorage
+
+        hourFlow = waterBalance.allSimulation.waterFlow - previousWaterFlow
+        print("hour:" + str(hour) + " water storage [m3]:" + format(currentStorage, ".6f")
+               + " water flow [m3]:" + format(hourFlow, ".7f"))
+
         previousStorage = waterBalance.currentStep.waterStorage
+        previousWaterFlow = waterBalance.allSimulation.waterFlow

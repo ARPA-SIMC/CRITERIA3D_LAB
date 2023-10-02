@@ -10,10 +10,10 @@ from soil import getVolumetricWaterContent
 
 
 class C3DBalance:
-    waterStorage = NODATA
-    waterFlow = NODATA
-    MBE = NODATA
-    MBR = NODATA
+    waterStorage = NODATA       # [m3]
+    waterFlow = NODATA          # [m3]
+    MBE = NODATA                # [m3] Mass Balance Error
+    MBR = NODATA                # [-] Mass Balance Ratio
 
 
 totalTime = 0.0
@@ -123,6 +123,7 @@ def sumSinkSource(deltaT):
     return mySum
 
 
+# [m3]
 def sumWaterFlow(deltaT, isAbsoluteValue):
     mySum = 0.0
     for i in range(C3DStructure.nrCells):

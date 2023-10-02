@@ -49,32 +49,47 @@ def readHorizon(soilFileName):
     for _, soilData in soilDataFrame.iterrows():
         horizon = CSoilHorizon()
         horizons.append(horizon)
+
         horizons[i].upperDepth = soilData["upper_depth"]
-        # check depth
+        # check upper depth
         if i > 0 and not horizons[i].upperDepth == horizons[i-1].lowerDepth:
             print("Wrong upper depth in layer: ", i+1)
             return False
         horizons[i].lowerDepth = soilData["lower_depth"]
+
         horizons[i].sand = soilData["sand"]
         horizons[i].silt = soilData["silt"]
         horizons[i].clay = soilData["clay"]
-        horizons[i].Campbell_he = soilData["Campbell_he"]
+
         horizons[i].Campbell_b = soilData["Campbell_b"]
         horizons[i].Campbell_n = 2.0 + (3.0 / horizons[i].Campbell_b)
-        horizons[i].VG_he = soilData["VG_he"]
+
+        if soilData["Campbell_he"] > 0:
+            horizons[i].Campbell_he = -soilData["Campbell_he"]
+        else:
+            horizons[i].Campbell_he = soilData["Campbell_he"]
+
+        if soilData["VG_he"] > 0:
+            horizons[i].VG_he = -soilData["VG_he"]
+        else:
+            horizons[i].VG_he = soilData["VG_he"]
+
         horizons[i].VG_alpha = soilData["VG_alpha"]
         horizons[i].VG_n = soilData["VG_n"]
         horizons[i].VG_m = 1. - (1. / horizons[i].VG_n)
         horizons[i].VG_Sc = pow(1. + pow(horizons[i].VG_alpha * fabs(horizons[i].VG_he),
                                          horizons[i].VG_n), -horizons[i].VG_m)
+
         horizons[i].VG_thetaR = soilData["thetaR"]
         horizons[i].thetaS = soilData["thetaS"]
+
         horizons[i].Ks = soilData["Ks"]
         horizons[i].Mualem_L = 0.5
+
         horizons[i].FC = getFieldCapacityWC(horizons[i])
         horizons[i].WP = getWiltingPointWC(horizons[i])
         horizons[i].HYGR = getHygroscopicWC(horizons[i])
-        # wsThreshold = FC - currentCrop.fRAW * (FC - WP)
+
         i += 1
 
     return True

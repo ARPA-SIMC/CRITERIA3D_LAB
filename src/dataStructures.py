@@ -120,12 +120,10 @@ class C3DParameters:
     isFreeLateralDrainage = False
     isFreeDrainage = True
     isWaterTable = False
-    isSaturatedLayer = False
 
     # initial conditions
     initialWaterPotential = -3.0        # [m]
     waterTableDepth = -3.0              # [m]
-    saturatedDepth = -3.0               # [m]
 
     # numerical solution parameters
     currentDeltaT = 60.0                # [s]

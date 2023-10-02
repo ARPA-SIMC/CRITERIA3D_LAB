@@ -22,7 +22,7 @@ from transmissivity import computeNormTransmissivity
 def main():
     # path
     print(os.getcwd())
-    projectPath = os.path.join("data", "test1D")
+    projectPath = os.path.join("../data", "test1D")
     settingsFolder = os.path.join(projectPath, "settings")
     weatherFolder = os.path.join(projectPath, "meteo")
     waterFolder = os.path.join(projectPath, "water")
@@ -76,7 +76,7 @@ def main():
     criteria3D.initializeMesh()
 
     waterBalance.initializeBalance()
-    print("Initial water storage [m^3]:", format(waterBalance.currentStep.waterStorage, ".3f"))
+    print("Initial water storage [m3]:", format(waterBalance.currentStep.waterStorage, ".5f"))
 
     print("Read weather data...")
     weatherData = importUtils.readMeteoData(weatherFolder)

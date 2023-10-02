@@ -10,8 +10,6 @@ from dataStructures import *
 
 
 def updateBoundary(deltaT):
-    satDepth = C3DStructure.elevation + C3DParameters.saturatedDepth
-
     for i in range(C3DStructure.nrCells):
         # Initialize
         C3DCells[i].flow = 0.0
@@ -21,14 +19,6 @@ def updateBoundary(deltaT):
         if (C3DCells[i].sinkSource != NODATA) and (C3DCells[i].sinkSource != 0.0):
             # [m3 s-1]
             C3DCells[i].flow = C3DCells[i].sinkSource
-
-        if C3DParameters.isSaturatedLayer:
-            if C3DCells[i].z <= satDepth:
-                currentWC = soil.getVolumetricWaterContent(i)
-                thetaSat = soil.horizons[C3DCells[i].horizonIndex].thetaS
-                if currentWC < thetaSat:
-                    deltaWC = (thetaSat - currentWC) * C3DCells[i].volume
-                     # C3DCells[i].flow += deltaWC / deltaT
 
         if C3DCells[i].boundary.type != BOUNDARY_NONE:
             slope = C3DCells[i].boundary.slope
@@ -53,7 +43,7 @@ def updateBoundary(deltaT):
             elif C3DCells[i].boundary.type == BOUNDARY_PRESCRIBEDTOTALPOTENTIAL:
                 prescribedH = C3DStructure.elevation + C3DParameters.waterTableDepth
                 dH = prescribedH - C3DCells[i].H
-                C3DCells[i].boundary.flow = C3DCells[i].k * dH * C3DCells[i].area
+                C3DCells[i].boundary.flow = C3DCells[i].k * dH/0.1 * C3DCells[i].area
 
             C3DCells[i].flow += C3DCells[i].boundary.flow
 

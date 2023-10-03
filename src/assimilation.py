@@ -44,7 +44,8 @@ def buildDataStructuresForInterpolation(initialState):
                 # from kPa to meters
                 observedPsi = float(psi / 9.81)
                 curve = C3DParameters.waterRetentionCurve
-                theta = soil.thetaFromPsi(curve, observedPsi)
+                horizonIndex= soil.getHorizonIndex(z[k])
+                theta = soil.thetaFromPsi(curve, observedPsi, soil.horizons[horizonIndex])
                 index = rectangularMesh.getCellIndex(x[i], y[j], z[k])
                 if index != NODATA:
                     currentTheta = soil.getVolumetricWaterContent(index)
@@ -157,5 +158,6 @@ def assimilate(initialState):
             currentTheta = soil.getVolumetricWaterContent(i)
             theta = currentTheta + value
             curve = C3DParameters.waterRetentionCurve
-            psi = soil.psiFromTheta(curve, theta)
+            horizonIndex = soil.getHorizonIndex(depth)
+            psi = soil.psiFromTheta(curve, theta, soil.horizons[horizonIndex])
             criteria3D.setMatricPotential(i, psi)

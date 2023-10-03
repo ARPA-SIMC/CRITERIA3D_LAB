@@ -22,7 +22,7 @@ from transmissivity import computeNormTransmissivity
 def main():
     # path
     print(os.getcwd())
-    projectPath = os.path.join("../data", "test1D")
+    projectPath = os.path.join("..\\data", "test1D")
     settingsFolder = os.path.join(projectPath, "settings")
     weatherFolder = os.path.join(projectPath, "meteo")
     waterFolder = os.path.join(projectPath, "water")
@@ -58,7 +58,7 @@ def main():
 
     # initialize crop
     if C3DParameters.computeTranspiration:
-        cropSettingsFilename = os.path.join(obsDataFolder, "crop.ini")
+        cropSettingsFilename = os.path.join(settingsFolder, "crop.ini")
         if os.path.exists(cropSettingsFilename):
             print("Read crop settings...")
             if not importUtils.readCropParameters(cropSettingsFilename):
@@ -94,7 +94,7 @@ def main():
     # initialize export
     exportUtils.createExportFile(outputFolder)
 
-    obsFileName = os.path.join(stateFolder, "obsWP.csv")
+    obsTmpFileName = os.path.join(stateFolder, "obsWP.csv")
     if C3DParameters.isPeriodicAssimilation or C3DParameters.isFirstAssimilation:
         obsWaterPotentialFileName = os.path.join(obsDataFolder, "waterPotential.csv")
         if os.path.exists(obsWaterPotentialFileName):
@@ -107,18 +107,17 @@ def main():
             C3DParameters.isFirstAssimilation = False
 
     # first assimilation
-    weatherIndex = 0
+    weatherIndex = 1
     if C3DParameters.isFirstAssimilation:
         print("Assimilate observed water potential (first hour)...")
         obsWeather = weatherData.loc[weatherIndex]
-        importUtils.extractObsData(obsWaterPotential, obsWeather["timestamp"], obsFileName)
-        importUtils.loadObsData(obsFileName)
-        obsWater = waterData.loc[weatherIndex]
-        transmissivity = computeNormTransmissivity(weatherData, weatherIndex, C3DStructure.latitude,
-                                                   C3DStructure.longitude)
+        timestamp = obsWeather["timestamp"]
+        if not importUtils.extractObsWaterPotential(obsWaterPotential, timestamp, obsTmpFileName):
+            return
+        importUtils.assimilateObsWaterPotential(obsTmpFileName)
         criteria3D.setIsRedraw(False)
-        criteria3D.computeOneHour(obsWeather, obsWater, transmissivity)
-        importUtils.loadObsData(obsFileName)
+        criteria3D.computeWaterFlow(3600)
+        importUtils.assimilateObsWaterPotential(obsTmpFileName)
 
     criteria3D.setIsRedraw(C3DParameters.isVisual)
     if C3DParameters.isVisual:
@@ -150,8 +149,9 @@ def main():
         # assimilation
         if C3DParameters.isPeriodicAssimilation and (currentIndex % C3DParameters.assimilationInterval) == 0:
             print("Assimilate observed water potential...")
-            importUtils.extractObsData(obsWaterPotential, obsWeather["timestamp"], obsFileName)
-            importUtils.loadObsData(obsFileName)
+            if not importUtils.extractObsWaterPotential(obsWaterPotential, obsWeather["timestamp"], obsTmpFileName):
+                return
+            importUtils.assimilateObsWaterPotential(obsTmpFileName)
 
         # save output
         exportUtils.takeScreenshot(obsWeather["timestamp"])

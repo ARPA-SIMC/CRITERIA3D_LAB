@@ -92,13 +92,16 @@ def SetCellLink(i, linkIndex, direction, interfaceArea):
 
 def initializeMesh():
     print("Set cell properties...")
-    totalPotential = C3DStructure.elevation + C3DParameters.initialWaterPotential
     waterTableDepth = NODATA
-    if C3DParameters.isWaterTable:
-        waterTableDepth = C3DStructure.elevation + C3DParameters.waterTableDepth
 
     for i in range(C3DStructure.nrRectangles):
         [x, y, z] = rectangularMesh.C3DRM[i].centroid
+        dzy = C3DStructure.slopeY * y
+        elevation = C3DStructure.elevation - dzy
+        totalPotential = elevation + C3DParameters.initialWaterPotential
+        if C3DParameters.isWaterTable:
+            waterTableDepth = elevation + C3DParameters.waterTableDepth
+
         for layer in range(C3DStructure.nrLayers):
             index = i + C3DStructure.nrRectangles * layer
             elevation = z - soil.depth[layer]
@@ -350,7 +353,7 @@ def computeEquilibrium():
     MBR = 999
     hour = 0
     print("hour:" + str(hour) + " water storage [m3]:" + format(previousStorage, ".6f"))
-    while MBR > EPSILON:
+    while MBR > 1E-5:
         computeWaterFlow(3600)
         hour += 1
         currentStorage = waterBalance.currentStep.waterStorage

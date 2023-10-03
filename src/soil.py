@@ -16,18 +16,18 @@ class CSoilHorizon:
     sand = NODATA           # [%]
     silt = NODATA           # [%]
     clay = NODATA           # [%]
-    Campbell_he = NODATA    # [J kg^-1]
+    Campbell_he = NODATA    # [m] absolute value
     Campbell_b = NODATA     # [-]
     Campbell_n = NODATA     # [-]
-    VG_he = NODATA          # [J kg^-1]
-    VG_alpha = NODATA       # [kg J^-1]
+    VG_he = NODATA          # [m] absolute value
+    VG_alpha = NODATA       # [m-1]
     VG_n = NODATA           # [-]
     VG_m = NODATA           # [-]
     VG_Sc = NODATA          # [-]
-    VG_thetaR = NODATA      # [m^3 m^-3]
+    VG_thetaR = NODATA      # [m3 m-3]
     Mualem_L = NODATA       # [-]
-    thetaS = NODATA         # [m^3 m^-3] water content at saturation
-    Ks = NODATA             # [kg s m^-3] soil water conductivity
+    thetaS = NODATA         # [m3 m-3] water content at saturation
+    Ks = NODATA             # [m s-1] soil water conductivity
     FC = NODATA             # [m3 m-3] water content at Field Capacity
     WP = NODATA             # [m3 m-3] water content at Wilting Point
     HYGR = NODATA           # [m3 m-3] water content at Hygroscopic moisture content
@@ -64,12 +64,12 @@ def readHorizon(soilFileName):
         horizons[i].Campbell_b = soilData["Campbell_b"]
         horizons[i].Campbell_n = 2.0 + (3.0 / horizons[i].Campbell_b)
 
-        if soilData["Campbell_he"] > 0:
+        if soilData["Campbell_he"] < 0:
             horizons[i].Campbell_he = -soilData["Campbell_he"]
         else:
             horizons[i].Campbell_he = soilData["Campbell_he"]
 
-        if soilData["VG_he"] > 0:
+        if soilData["VG_he"] < 0:
             horizons[i].VG_he = -soilData["VG_he"]
         else:
             horizons[i].VG_he = soilData["VG_he"]
@@ -149,9 +149,9 @@ def setLayers(totalDepth, minThickness, maxThickness, maxThicknessDepth):
     return nrLayers, z, thick
 
 
-def getHorizonIndex(currentDepth):
+def getHorizonIndex(myDepth):
     for i in range(len(horizons)):
-        if horizons[i].upperDepth <= currentDepth <= horizons[i].lowerDepth:
+        if horizons[i].upperDepth <= myDepth <= horizons[i].lowerDepth:
             return i
     return NODATA
 
@@ -185,11 +185,12 @@ def getHydraulicConductivity(i):
     return hydraulicConductivity(curve, C3DCells[i].Se, horizons[index])
 
 
+# [m] air entry potential with sign
 def airEntryPotential(curve, horizon):
     if curve == CAMPBELL:
-        return horizon.Campbell_he
+        return -horizon.Campbell_he
     elif curve == IPPISCH_VG:
-        return horizon.VG_he
+        return -horizon.VG_he
     else:
         return NODATA
 
@@ -220,7 +221,7 @@ def degreeOfSaturation(curve, signPsi, horizon):
 
     Se = NODATA
     if curve == CAMPBELL:
-        Se = pow(fabs(signPsi) / horizon.Campbell_he, -1. / horizon.Campbell_b)
+        Se = pow(fabs(signPsi) / fabs(horizon.Campbell_he), -1. / horizon.Campbell_b)
     elif curve == IPPISCH_VG:
         Se = (1. / horizon.VG_Sc) * pow(1. + pow(horizon.VG_alpha
                                                  * fabs(signPsi), horizon.VG_n), -horizon.VG_m)

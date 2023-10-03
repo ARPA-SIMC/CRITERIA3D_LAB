@@ -23,9 +23,7 @@ class C3DStructure:
     gridHeight = NODATA         # [m] grid height (axis y)
     gridDepth = NODATA          # [m] grid depth (axis z)
 
-    slopeX = NODATA             # [-] slope on x axis
     slopeY = NODATA             # [-] slope on y axis
-
     plantSlope = NODATA         # [-] slope around plant (baulatura)
     plantSlopeWidth = NODATA    # [m] width of baulatura
 

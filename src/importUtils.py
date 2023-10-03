@@ -23,7 +23,7 @@ import crop
 
 def configToDict(settingsFilename):
     config = ConfigParser(converters={"any": lambda x: literal_eval(x)})
-    config.optionxform=str
+    config.optionxform = str
     modelSettings = config.read(settingsFilename)
     if len(modelSettings) == 0:
         print("ERROR!\nMissing setting file: " + settingsFilename)
@@ -158,14 +158,16 @@ def readModelParameters(settingsFilename):
     try:
         C3DParameters.initialWaterPotential = configDict['initial_conditions']['initialWaterPotential']
     except:
-        print("WARNING!\nWrong or missing initial_conditions.initialWaterPotential in the model settings: " + settingsFilename)
+        print(
+            "WARNING!\nWrong or missing initial_conditions.initialWaterPotential in the model settings: " + settingsFilename)
         print("The default will be set: initialWaterPotential = -3.0 [m]")
         C3DParameters.initialWaterPotential = -3.0
 
     try:
         C3DParameters.waterTableDepth = configDict['initial_conditions']['waterTableDepth']
     except:
-        print("WARNING!\nWrong or missing initial_conditions.waterTableDepth in the model settings: " + settingsFilename)
+        print(
+            "WARNING!\nWrong or missing initial_conditions.waterTableDepth in the model settings: " + settingsFilename)
         print("The default will be set: waterTableDepth = -3.0 [m]")
         C3DParameters.waterTableDepth = -3.0
 
@@ -188,21 +190,24 @@ def readModelParameters(settingsFilename):
     try:
         C3DParameters.maxIterationsNr = configDict['numerical_solution']['maxIterationsNr']
     except:
-        print("WARNING!\nWrong or missing numerical_solution.maxIterationsNr in the model settings: " + settingsFilename)
+        print(
+            "WARNING!\nWrong or missing numerical_solution.maxIterationsNr in the model settings: " + settingsFilename)
         print("The default will be set: maxIterationsNr = 100")
         C3DParameters.maxIterationsNr = 100
 
     try:
         C3DParameters.maxApproximationsNr = configDict['numerical_solution']['maxApproximationsNr']
     except:
-        print("WARNING!\nWrong or missing numerical_solution.maxIterationsNr in the model settings: " + settingsFilename)
+        print(
+            "WARNING!\nWrong or missing numerical_solution.maxIterationsNr in the model settings: " + settingsFilename)
         print("The default will be set: maxApproximationsNr = 10")
         C3DParameters.maxApproximationsNr = 10
 
     try:
         C3DParameters.residualTolerance = configDict['numerical_solution']['residualTolerance']
     except:
-        print("WARNING!\nWrong or missing numerical_solution.residualTolerance in the model settings: " + settingsFilename)
+        print(
+            "WARNING!\nWrong or missing numerical_solution.residualTolerance in the model settings: " + settingsFilename)
         print("The default will be set: residualTolerance = 1E-12")
         C3DParameters.residualTolerance = 1E-12
 
@@ -253,14 +258,16 @@ def readModelParameters(settingsFilename):
     try:
         C3DParameters.isFirstAssimilation = configDict['simulation_type']['isFirstAssimilation']
     except:
-        print("WARNING!\nWrong or missing simulation_type.isFirstAssimilation in the model settings: " + settingsFilename)
+        print(
+            "WARNING!\nWrong or missing simulation_type.isFirstAssimilation in the model settings: " + settingsFilename)
         print("The default will be set: isFirstAssimilation = False")
         C3DParameters.isFirstAssimilation = False
 
     try:
         C3DParameters.isPeriodicAssimilation = configDict['simulation_type']['isPeriodicAssimilation']
     except:
-        print("WARNING!\nWrong or missing simulation_type.isPeriodicAssimilation in the model settings: " + settingsFilename)
+        print(
+            "WARNING!\nWrong or missing simulation_type.isPeriodicAssimilation in the model settings: " + settingsFilename)
         print("The default will be set: isPeriodicAssimilation = False")
         C3DParameters.isPeriodicAssimilation = False
 
@@ -271,7 +278,8 @@ def readModelParameters(settingsFilename):
             C3DParameters.assimilationInterval = NODATA
 
         if C3DParameters.assimilationInterval == NODATA or C3DParameters.assimilationInterval < 1:
-            print("ERROR!\nWrong or missing simulation_type.assimilationInterval in the model settings: " + settingsFilename)
+            print(
+                "ERROR!\nWrong or missing simulation_type.assimilationInterval in the model settings: " + settingsFilename)
             print("Valid values: greater than or equal to 1 hour")
             return False
 
@@ -340,11 +348,6 @@ def readFieldParameters(fieldSettingsFilename):
     initialize3DStructure(width, height, C3DStructure.cellSize)
 
     # [slope]
-    try:
-        C3DStructure.slopeX = configDict['slope']['slopeX']
-    except:
-        C3DStructure.slopeX = 0
-
     try:
         C3DStructure.slopeY = configDict['slope']['slopeY']
     except:
@@ -574,32 +577,35 @@ def readWaterData(waterPath):
     return mergedDf
 
 
-def loadObsData(fileName):
-    obsState = pd.read_csv(fileName)
-    assimilation.assimilate(obsState)
-    waterBalance.updateStorage()
-    return True
-
-
-def extractObsData(obsData, timeStamp, fileName):
+def extractObsWaterPotential(obsData, timeStamp, fileName):
     header = "x,y,z,value\n"
     f = open(fileName, "w")
     f.write(header)
 
     df = obsData[obsData["timestamp"] == timeStamp]
-    if not df.empty:
-        for column in [column for column in list(df.columns) if column != "timestamp"]:
-            splitted_column = column.split("_")
-            value = df[column].values[0]
-            if math.isnan(value) or (value <= -2500):
-                value = NODATA
-            f.write(
-                "{:.2f}".format(float(splitted_column[2][1:]) / 100) + ","  # x
-                + "{:.1f}".format(float(splitted_column[1][1:]) / 100) + ","  # y
-                + "{:.1f}".format(float(splitted_column[0][1:]) / 100) + ","  # z
-                + "{:.1f}".format(value) + "\n"  # psi
-            )
-    return not df.empty
+    if df.empty:
+        print("Error! Timestamp " + str(timeStamp) + " is missing in observed water potential data.")
+        return False
+
+    for column in [column for column in list(df.columns) if column != "timestamp"]:
+        splitted_column = column.split("_")
+        value = df[column].values[0]
+        if math.isnan(value) or (value <= -2500):
+            value = NODATA
+        f.write(
+            "{:.2f}".format(float(splitted_column[2][1:]) / 100) + ","      # x
+            + "{:.1f}".format(float(splitted_column[1][1:]) / 100) + ","    # y
+            + "{:.1f}".format(float(splitted_column[0][1:]) / 100) + ","    # z
+            + "{:.1f}".format(value) + "\n"  # psi
+        )
+    return True
+
+
+def assimilateObsWaterPotential(fileName):
+    obsState = pd.read_csv(fileName)
+    assimilation.assimilate(obsState)
+    waterBalance.updateStorage()
+    return True
 
 
 def saveCurrentModelState(stateFileName):

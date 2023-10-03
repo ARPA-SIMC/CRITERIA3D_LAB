@@ -5,7 +5,6 @@
 # ---------------------------------------------------------
 
 from math import sqrt
-import soil
 from dataStructures import *
 
 
@@ -41,7 +40,8 @@ def updateBoundary(deltaT):
                 C3DCells[i].boundary.flow = -C3DCells[i].k * C3DCells[i].upLink.area
 
             elif C3DCells[i].boundary.type == BOUNDARY_PRESCRIBEDTOTALPOTENTIAL:
-                prescribedH = C3DStructure.elevation + C3DParameters.waterTableDepth
+                dzy = C3DStructure.slopeY * C3DCells[i].y
+                prescribedH = C3DStructure.elevation - dzy + C3DParameters.waterTableDepth
                 dH = prescribedH - C3DCells[i].H
                 C3DCells[i].boundary.flow = C3DCells[i].k * dH/0.1 * C3DCells[i].area
 

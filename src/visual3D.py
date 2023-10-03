@@ -114,10 +114,11 @@ def initialize(totalWidth):
     sliceCanvas.caption += "\n 'e': compute hydrostatic Equilibrium"
     sliceCanvas.caption += "\n 's': Save state "
     sliceCanvas.caption += "\n 'l': Load state "
-    sliceCanvas.caption += "\n\n 'c': set Colorscale range"
-    sliceCanvas.caption += "\n 'w': view Water content/potential"
+    sliceCanvas.caption += "\n "
+    sliceCanvas.caption += "\n 'w': switch Water content - potential"
     sliceCanvas.caption += "\n 'd': view root Density"
     sliceCanvas.caption += "\n 'o': view Output points"
+    sliceCanvas.caption += "\n 'c': set Colorscale range"
 
     drawSlice(True)
     updateInterface()
@@ -464,8 +465,8 @@ def updateInterface():
     totalFlow = waterBalance.allSimulation.waterFlow
     totalError = waterBalance.allSimulation.MBE
     stepLabel.text = "Time step: " + str(timeStep) + " [s]"
-    storageLabel.text = "Storage: " + format(storage, ".4f") + " [m3]"
-    flowLabel.text = "Flow: " + format(flow * 1000, ".4f") + " [l]"
+    storageLabel.text = "Storage: " + format(storage, ".5f") + " [m3]"
+    flowLabel.text = "Current flow: " + format(flow * 1000, ".4f") + " [l]"
     totalFlowLabel.text = "Total flow: " + format(totalFlow * 1000, ".4f") + " [l]"
     totalErrorLabel.text = "Total error: " + format(totalError * 1000, ".4f") + " [l]"
 

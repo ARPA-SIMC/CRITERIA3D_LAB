@@ -576,6 +576,13 @@ def readWaterData(waterPath):
 
     return mergedDf
 
+def readInputUnified(meteoPath):
+    unifiedFile = "unified.csv"
+    unified = pd.read_csv(os.path.join(meteoPath, unifiedFile))
+    
+    unified = unified.set_index(['timestamp'])
+    
+    return unified.reset_index()
 
 def extractObsWaterPotential(obsData, timeStamp, fileName):
     header = "x,y,z,value\n"

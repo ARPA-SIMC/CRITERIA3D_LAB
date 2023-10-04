@@ -78,18 +78,16 @@ def main():
     waterBalance.initializeBalance()
     print("Initial water storage [m3]:", format(waterBalance.currentStep.waterStorage, ".5f"))
 
-    print("Read weather data...")
-    weatherData = importUtils.readMeteoData(weatherFolder)
-    weatherData.set_index(["timestamp"])
-    weatherData["time"] = pd.to_datetime(weatherData["timestamp"], infer_datetime_format=True)
+    #read unified input file 
+    print("Read weather and irrigation data...")
+    wholeData = importUtils.readInputUnified(weatherFolder)
+    wholeData["time"] = pd.to_datetime(wholeData["timestamp"], infer_datetime_format=True)
 
-    print("Total simulation time [hours]:", len(weatherData))
+    print("Total simulation time [hours]:", len(wholeData))
 
-    # read irrigation
-    print("Read irrigation data...")
-    waterData = importUtils.readWaterData(waterFolder)
-    waterData.set_index(["timestamp"])
-    waterData["time"] = pd.to_datetime(waterData["timestamp"], infer_datetime_format=True)
+    #split the dataframe in two
+    weatherData = wholeData[["timestamp", "air_humidity", "solar_radiation", "air_temperature", "wind_speed"]]
+    waterData = wholeData[["timestamp", "precipitation", "irrigation"]]
 
     # initialize export
     exportUtils.createExportFile(outputFolder)

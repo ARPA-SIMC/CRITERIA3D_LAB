@@ -527,62 +527,13 @@ def readWaterTable(waterPath):
 
 
 def readMeteoData(meteoPath):
-    humidityFile = "air_humidity.csv"
-    humidity = pd.read_csv(os.path.join(meteoPath, humidityFile))
-
-    radiationsFile = "solar_radiation.csv"
-    radiations = pd.read_csv(os.path.join(meteoPath, radiationsFile))
-
-    temperatureFile = "air_temperature.csv"
-    temperature = pd.read_csv(os.path.join(meteoPath, temperatureFile))
-
-    windFile = "wind_speed.csv"
-    wind = pd.read_csv(os.path.join(meteoPath, windFile))
-
-    meteoData = [humidity, radiations, temperature, wind]
-
-    for i in range(len(meteoData) - 1):
-        if meteoData[i].iloc[0]["timestamp"] != meteoData[i + 1].iloc[0]["timestamp"]:
-            raise Exception("Meteo files have different time spans")
-
-    for i in range(len(meteoData)):
-        meteoData[i] = meteoData[i].set_index(['timestamp'])
-
-    mergedDf = meteoData[0]
-    for i in range(1, len(meteoData)):
-        mergedDf = mergedDf.merge(meteoData[i], how='outer', left_index=True, right_index=True)
-
-    return mergedDf.reset_index()
-
-
-def readWaterData(waterPath):
-    irrigationFile = "irrigation.csv"
-    irrigation = pd.read_csv(os.path.join(waterPath, irrigationFile))
-
-    precipitationsFile = "precipitation.csv"
-    precipitations = pd.read_csv(os.path.join(waterPath, precipitationsFile))
-
-    if irrigation.iloc[0]["timestamp"] != precipitations.iloc[0]["timestamp"]:
-        raise Exception("Water files have different time range")
-
-    if irrigation.iloc[-1]["timestamp"] != precipitations.iloc[-1]["timestamp"]:
-        raise Exception("Water files have different time range")
-
-    irrigation = irrigation.set_index(['timestamp'])
-    precipitations = precipitations.set_index(['timestamp'])
-
-    mergedDf = irrigation.merge(precipitations, how='outer', left_index=True, right_index=True)
-    mergedDf = mergedDf.reset_index()
-
-    return mergedDf
-
-def readInputUnified(meteoPath):
-    unifiedFile = "unified.csv"
+    unifiedFile = "meteo.csv"
     unified = pd.read_csv(os.path.join(meteoPath, unifiedFile))
     
     unified = unified.set_index(['timestamp'])
     
     return unified.reset_index()
+
 
 def extractObsWaterPotential(obsData, timeStamp, fileName):
     header = "x,y,z,value\n"

@@ -25,7 +25,6 @@ def main():
     projectPath = os.path.join("..\\data", "test1D")
     settingsFolder = os.path.join(projectPath, "settings")
     weatherFolder = os.path.join(projectPath, "meteo")
-    waterFolder = os.path.join(projectPath, "water")
     obsDataFolder = os.path.join(projectPath, "obs_data")
     stateFolder = os.path.join(projectPath, "state")
     outputFolder = os.path.join(projectPath, "output")
@@ -78,14 +77,14 @@ def main():
     waterBalance.initializeBalance()
     print("Initial water storage [m3]:", format(waterBalance.currentStep.waterStorage, ".5f"))
 
-    #read unified input file 
+    # read unified meteo input file
     print("Read weather and irrigation data...")
-    wholeData = importUtils.readInputUnified(weatherFolder)
+    wholeData = importUtils.readMeteoData(weatherFolder)
     wholeData["time"] = pd.to_datetime(wholeData["timestamp"], infer_datetime_format=True)
 
     print("Total simulation time [hours]:", len(wholeData))
 
-    #split the dataframe in two
+    # split the dataframe in two
     weatherData = wholeData[["timestamp", "air_humidity", "solar_radiation", "air_temperature", "wind_speed"]]
     waterData = wholeData[["timestamp", "precipitation", "irrigation"]]
 

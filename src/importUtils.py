@@ -299,50 +299,50 @@ def readFieldParameters(fieldSettingsFilename):
     try:
         C3DStructure.latitude = configDict['location']['lat']
     except:
-        print("ERROR! Missing location.lat in field.ini")
+        print("ERROR! Missing location.lat in domain.ini")
         return False
 
     try:
         C3DStructure.longitude = configDict['location']['lon']
     except:
-        print("ERROR! Missing location.lon in field.ini")
+        print("ERROR! Missing location.lon in domain.ini")
         return False
 
     try:
         C3DStructure.elevation = configDict['location']['z']
     except:
-        print("ERROR! Missing location.z in field.ini")
+        print("ERROR! Missing location.z in domain.ini")
         return False
 
     try:
         C3DStructure.timeZone = configDict['location']['timeZone']
     except:
-        print("ERROR! Missing location.timeZone in field.ini")
+        print("ERROR! Missing location.timeZone in domain.ini")
         return False
 
     # [size]
     try:
         width = configDict['size']['width']
     except:
-        print("ERROR! Missing size.width in field.ini")
+        print("ERROR! Missing size.width in domain.ini")
         return False
 
     try:
         height = configDict['size']['height']
     except:
-        print("ERROR! Missing size.height in field.ini")
+        print("ERROR! Missing size.height in domain.ini")
         return False
 
     try:
         C3DStructure.gridDepth = configDict['size']['depth']
     except:
-        print("ERROR! Missing size.depth in field.ini")
+        print("ERROR! Missing size.depth in domain.ini")
         return False
 
     try:
         C3DStructure.cellSize = configDict['size']['cellSize']
     except:
-        print("ERROR! Missing size.cellSize in field.ini")
+        print("ERROR! Missing size.cellSize in domain.ini")
         return False
 
     initialize3DStructure(width, height, C3DStructure.cellSize)
@@ -381,12 +381,12 @@ def readFieldParameters(fieldSettingsFilename):
             return False
 
         if not isinstance(crop.x, tuple) or not isinstance(crop.y, tuple):
-            print("ERROR! Missing plant positions in field.ini")
+            print("ERROR! Missing plant positions in domain.ini")
             print("Set at least two plants to define the row direction.")
             return False
 
         if len(crop.x) != len(crop.y):
-            print("ERROR! Different numbers of plant.x,y in field.ini")
+            print("ERROR! Different numbers of plant.x,y in domain.ini")
             return False
 
         for i in range(len(crop.x)):

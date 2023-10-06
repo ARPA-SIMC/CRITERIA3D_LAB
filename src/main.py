@@ -35,7 +35,7 @@ def main():
         return
 
     print("Read field settings...")
-    fieldSettings = os.path.join(settingsFolder, "field.ini")
+    fieldSettings = os.path.join(settingsFolder, "domain.ini")
     if not importUtils.readFieldParameters(fieldSettings):
         return
 

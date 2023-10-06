@@ -44,7 +44,7 @@ def buildDataStructuresForInterpolation(initialState):
                 # from kPa to meters
                 observedPsi = float(psi / 9.81)
                 curve = C3DParameters.waterRetentionCurve
-                horizonIndex= soil.getHorizonIndex(z[k])
+                horizonIndex = soil.getHorizonIndex(z[k])
                 theta = soil.thetaFromPsi(curve, observedPsi, soil.horizons[horizonIndex])
                 index = rectangularMesh.getCellIndex(x[i], y[j], z[k])
                 if index != NODATA:

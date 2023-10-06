@@ -22,7 +22,7 @@ from transmissivity import computeNormTransmissivity
 def main():
     # path
     print(os.getcwd())
-    projectPath = os.path.join("..\\data", "test1D")
+    projectPath = os.path.join("..\\data", "test2D")
     settingsFolder = os.path.join(projectPath, "settings")
     weatherFolder = os.path.join(projectPath, "meteo")
     obsDataFolder = os.path.join(projectPath, "obs_data")
@@ -104,7 +104,7 @@ def main():
             C3DParameters.isFirstAssimilation = False
 
     # first assimilation
-    weatherIndex = 1
+    weatherIndex = 0
     if C3DParameters.isFirstAssimilation:
         print("Assimilate observed water potential (first hour)...")
         obsWeather = weatherData.loc[weatherIndex]

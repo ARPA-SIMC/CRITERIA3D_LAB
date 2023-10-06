@@ -313,7 +313,6 @@ def computeOneHour(obsWeather, obsWater, transmissivity):
     # evapotranspiration [mm m-2]
     ET0 = computeHourlyET0(C3DStructure.elevation, airTemperature, globalSWRadiation, airRelHumidity,
                            windSpeed_10m, transmissivity)
-    print(currentDateTime, "ET0:", format(ET0, ".2f"))
 
     initializeSinkSource(ALL)
     crop.setEvapotranspiration(currentDateTime, ET0)
@@ -340,6 +339,7 @@ def computeOneHour(obsWeather, obsWater, transmissivity):
     else:
         C3DParameters.currentDeltaT_max = C3DParameters.deltaT_max
 
+    print(currentDateTime)
     computeWaterFlow(3600)
 
 

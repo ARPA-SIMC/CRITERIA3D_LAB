@@ -27,9 +27,9 @@ class C3DStructure:
     plantSlope = NODATA         # [-] slope around plant (baulatura)
     plantSlopeWidth = NODATA    # [m] width of baulatura
 
+    totalArea = NODATA          # [m2]
     nrLayers = NODATA
     nrCells = NODATA
-    totalArea = NODATA
 
     nrRectanglesInXAxis = NODATA
     nrRectanglesInYAxis = NODATA

@@ -210,8 +210,8 @@ def setTranspiration(surfaceIndex, myRootDensity, maxTranspiration):
         return 0.0
 
     # Initialize
-    rootDensityWithoutStress = 0.0  # [-]
-    actualTranspiration = 0.0  # [mm]
+    rootDensityWithoutStress = 0.0      # [-]
+    actualTranspiration = 0.0           # [mm]
 
     nrLayers = len(myRootDensity)
     isLayerStressed = np.zeros(nrLayers, dtype=bool)
@@ -344,16 +344,26 @@ def setEvaporation(surfaceIndex, maxEvaporation):
     return actualEvaporation
 
 
-def setEvapotranspiration(currentDate, ET0):
+def computeEvapotranspiration(currentDate, ET0):
+    # crop transpiration
+    realTranspiration = 0.0
     if C3DParameters.computeTranspiration:
         currentCrop.setCurrentLAI(currentDate)
         for i in range(C3DStructure.nrRectangles):
             maxTranspiration = getMaxTranspiration(currentCrop.currentLAI, currentCrop.kcMax, ET0) * k_root[i]
-            setTranspiration(i, rootDensity[i], maxTranspiration)
+            currentTranspiration = setTranspiration(i, rootDensity[i], maxTranspiration)  # [mm]
+            realTranspiration += currentTranspiration
+        realTranspiration /= C3DStructure.nrRectangles
     else:
         currentCrop.currentLAI = 0
 
+    # soil evaporation
+    realEvaporation = 0.0
     if C3DParameters.computeEvaporation:
         maxEvaporation = getMaxEvaporation(currentCrop.currentLAI, ET0)
         for i in range(C3DStructure.nrRectangles):
-            setEvaporation(i, maxEvaporation)
+            currentEvaporation = setEvaporation(i, maxEvaporation)
+            realEvaporation += currentEvaporation
+        realEvaporation /= C3DStructure.nrRectangles
+
+    return realEvaporation, realTranspiration

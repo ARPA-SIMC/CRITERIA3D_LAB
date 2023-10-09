@@ -367,7 +367,7 @@ def readFieldParameters(fieldSettingsFilename):
     print("Building rectangle mesh...")
     rectangularMesh.rectangularMeshCreation()
     print("Nr. of rectangles:", C3DStructure.nrRectangles)
-    print("Total area [m^2]:", format(C3DStructure.totalArea, ".4f"))
+    print("Total area [m^2]:", format(C3DStructure.totalArea, ".5f"))
 
     # set [plant]
     plantIndices.clear()

@@ -1,6 +1,7 @@
 import os
 from dataStructures import *
 import rectangularMesh
+import waterBalance
 import pandas as pd
 import soil
 
@@ -18,6 +19,14 @@ def createExportFile(outputPath):
     outputFileWP = os.path.join(outputPath, "waterPotential.csv")
     outputFileWC = os.path.join(outputPath, "waterContent.csv")
     outputFileBalance = os.path.join(outputPath, "waterBalance.csv")
+
+    # hourly balance
+    if IS_OUTPUT_LITER:
+        header = "timestamp, storage [l], prec [l], irr [l], ET0 [l], Evap [l], Transp [l]\n"
+    else:
+        header = "timestamp, storage [m3], prec [m3], irr [m3], ET0 [m3], Evap [m3], Transp [m3]\n"
+    with open(outputFileBalance, "w") as f:
+        f.write(header)
 
     if oneTimestampPerRow:
         outputPoints = pd.read_csv(os.path.join(outputPath, "output_points.csv"))
@@ -80,6 +89,26 @@ def takeAll():
 
 
 def takeScreenshot(timestamp):
+    # hourly water balance
+    row = str(int(timestamp))
+    if IS_OUTPUT_LITER:
+        row += "," + '{:.5f}'.format(waterBalance.hourlyBalance.waterStorage * 1000.0)
+        row += "," + '{:.5f}'.format(waterBalance.hourlyBalance.precipitation * C3DStructure.totalArea)
+        row += "," + '{:.5f}'.format(waterBalance.hourlyBalance.irrigation)
+        row += "," + '{:.5f}'.format(waterBalance.hourlyBalance.ET0 * C3DStructure.totalArea)
+        row += "," + '{:.5f}'.format(waterBalance.hourlyBalance.evaporation * C3DStructure.totalArea)
+        row += "," + '{:.5f}'.format(waterBalance.hourlyBalance.transpiration * C3DStructure.totalArea)
+    else:
+        row += "," + '{:.6f}'.format(waterBalance.hourlyBalance.waterStorage)
+        row += "," + '{:.6f}'.format(waterBalance.hourlyBalance.precipitation * C3DStructure.totalArea * 0.001)
+        row += "," + '{:.6f}'.format(waterBalance.hourlyBalance.irrigation * 0.001)  # liters --> m3
+        row += "," + '{:.6f}'.format(waterBalance.hourlyBalance.ET0 * C3DStructure.totalArea * 0.001)
+        row += "," + '{:.6f}'.format(waterBalance.hourlyBalance.evaporation * C3DStructure.totalArea * 0.001)
+        row += "," + '{:.6f}'.format(waterBalance.hourlyBalance.transpiration * C3DStructure.totalArea * 0.001)
+    row += "\n"
+    with open(outputFileBalance, "a") as f:
+        f.write(row)
+
     if oneTimestampPerRow:
         rowPotential = str(int(timestamp))
         rowWaterContent = str(int(timestamp))

@@ -310,29 +310,33 @@ def computeOneHour(obsWeather, obsWater, transmissivity):
     else:
         precipitation = 0
 
-    # evapotranspiration [mm m-2]
-    ET0 = computeHourlyET0(C3DStructure.elevation, airTemperature, globalSWRadiation, airRelHumidity,
-                           windSpeed_10m, transmissivity)
-
     initializeSinkSource(ALL)
-    crop.setEvapotranspiration(currentDateTime, ET0)
+
+    # potential evapotranspiration [mm m-2]
+    waterBalance.hourlyBalance.ET0 = computeHourlyET0(C3DStructure.elevation, airTemperature, globalSWRadiation,
+                                                      airRelHumidity, windSpeed_10m, transmissivity)
+
+    realEvap, realTransp = crop.computeEvapotranspiration(currentDateTime, waterBalance.hourlyBalance.ET0)
+    waterBalance.hourlyBalance.evaporation = realEvap
+    waterBalance.hourlyBalance.transpiration = realTransp
 
     initializeSinkSource(ONLY_SURFACE)
-    waterBalance.currentPrec = precipitation    # [mm hour-1]
+    waterBalance.hourlyBalance.precipitation = precipitation  # [mm hour-1]
     setRainfall(precipitation, 3600)
 
+    waterBalance.hourlyBalance.irrigation = 0
     if C3DParameters.assignIrrigation:
+        irrigation = 0.0
         if not (np.isnan(obsWater["irrigation"])):
             irrigation = obsWater["irrigation"]
         else:
-            irrigation = 0
             print("Missing data: irrigation")
 
-        waterBalance.currentIrr = irrigation    # [l hour-1]
+        waterBalance.hourlyBalance.irrigation = irrigation * len(dripperIndices)  # [l hour-1]
         setDripIrrigation(irrigation, 3600)
 
     # reduce deltaT during water event
-    if (waterBalance.currentIrr > 0) or (waterBalance.currentPrec > 0):
+    if (waterBalance.hourlyBalance.irrigation > 0) or (waterBalance.hourlyBalance.precipitation > 0):
         if C3DParameters.currentDeltaT_max > 300:
             C3DParameters.currentDeltaT_max = 300
             C3DParameters.currentDeltaT = min(C3DParameters.currentDeltaT, C3DParameters.currentDeltaT_max)
@@ -366,7 +370,7 @@ def computeEquilibrium():
 
         hourFlow = waterBalance.allSimulation.waterFlow - previousWaterFlow
         print("hour:" + str(hour) + " water storage [m3]:" + format(currentStorage, ".6f")
-               + " water flow [m3]:" + format(hourFlow, ".7f"))
+              + " water flow [m3]:" + format(hourFlow, ".7f"))
 
         previousStorage = waterBalance.currentStep.waterStorage
         previousWaterFlow = waterBalance.allSimulation.waterFlow

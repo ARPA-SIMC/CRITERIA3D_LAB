@@ -22,7 +22,7 @@ from transmissivity import computeNormTransmissivity
 def main():
     # path
     print(os.getcwd())
-    projectPath = os.path.join("..\\data", "test1D")
+    projectPath = os.path.join("..\\data", "test2D")
     settingsFolder = os.path.join(projectPath, "settings")
     weatherFolder = os.path.join(projectPath, "meteo")
     obsDataFolder = os.path.join(projectPath, "obs_data")

@@ -6,6 +6,8 @@
 
 CYTHON = True
 
+IS_OUTPUT_LITER = True
+
 CAMPBELL = 1
 IPPISCH_VG = 2
 

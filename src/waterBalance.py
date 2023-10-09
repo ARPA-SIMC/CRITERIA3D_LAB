@@ -9,16 +9,37 @@ from dataStructures import *
 from soil import getVolumetricWaterContent
 
 
+class C3DHourlyBalance:
+    waterStorage = NODATA       # [m3]
+    precipitation = NODATA      # [mm]
+    irrigation = NODATA         # [l]
+    ET0 = NODATA                # [mm]
+    evaporation = NODATA        # [mm]
+    transpiration = NODATA      # [mm]
+
+    def initialize(self, waterStorage):
+        self.waterStorage = waterStorage
+        self.precipitation = 0.0
+        self.irrigation = 0.0
+        self.ET0 = 0.0
+        self.evaporation = 0.0
+        self.transpiration = 0.0
+
+
 class C3DBalance:
     waterStorage = NODATA       # [m3]
     waterFlow = NODATA          # [m3]
     MBE = NODATA                # [m3] Mass Balance Error
     MBR = NODATA                # [-] Mass Balance Ratio
 
+    def initialize(self, waterStorage):
+        self.waterStorage = waterStorage
+        self.waterFlow = 0.0
+        self.MBE = 0.0
+        self.MBR = 0.0
+
 
 totalTime = 0.0
-currentPrec = 0.0
-currentIrr = 0.0
 MBRMultiply: float = 1.0
 maxCourant = 0.0
 bestMBR = NODATA
@@ -27,6 +48,7 @@ forceExit = False
 currentStep = C3DBalance()
 previousStep = C3DBalance()
 allSimulation = C3DBalance()
+hourlyBalance = C3DHourlyBalance()
 
 
 def doubleTimeStep():
@@ -68,15 +90,11 @@ def initializeBalance():
 
     totalTime = 0.0
     storage = getWaterStorage()
-    currentStep.waterStorage = storage
-    previousStep.waterStorage = storage
-    allSimulation.waterStorage = storage
-    previousStep.waterFlow = 0.0
-    currentStep.waterFlow = 0.0
-    allSimulation.waterFlow = 0.0
-    currentStep.MBR = 0.0
-    currentStep.MBE = 0.0
-    allSimulation.MBE = 0
+
+    currentStep.initialize(storage)
+    previousStep.initialize(storage)
+    allSimulation.initialize(storage)
+    hourlyBalance.initialize(storage)
 
 
 def updateStorage():
@@ -84,12 +102,14 @@ def updateStorage():
     currentStep.waterStorage = storage
     previousStep.waterStorage = storage
     allSimulation.waterStorage = storage
+    hourlyBalance.waterStorage = storage
 
 
 def updateBalance(deltaT):
     global totalTime
     totalTime += deltaT
     previousStep.waterStorage = currentStep.waterStorage
+    hourlyBalance.waterStorage = currentStep.waterStorage
     previousStep.waterFlow = currentStep.waterFlow
     allSimulation.waterFlow += currentStep.waterFlow
     allSimulation.MBE += currentStep.MBE

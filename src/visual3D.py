@@ -457,8 +457,12 @@ def drawSurface(isFirst):
 
 def updateInterface():
     timeLabel.text = "Time: " + format(waterBalance.totalTime / 3600.0, ".3f") + " [h]"
-    precLabel.text = "Rainfall: " + format(waterBalance.currentPrec, ".1f") + " [mm/hour]"
-    irrLabel.text = "Irrigation: " + format(waterBalance.currentIrr, ".3f") + " [l/hour]"
+    precLabel.text = "Rainfall: " + format(waterBalance.hourlyBalance.precipitation, ".1f") + " [mm/hour]"
+    if len(dripperIndices) > 0:
+        singleIrrigation = waterBalance.hourlyBalance.irrigation / len(dripperIndices)
+    else:
+        singleIrrigation = 0.0
+    irrLabel.text = "Irrigation: " + format(singleIrrigation, ".3f") + " [l/hour]"
     storage = waterBalance.currentStep.waterStorage
     flow = waterBalance.currentStep.waterFlow
     timeStep = C3DParameters.currentDeltaT

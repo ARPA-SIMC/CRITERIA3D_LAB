@@ -311,17 +311,19 @@ def computeOneHour(obsWeather, obsWater, transmissivity):
         precipitation = 0
 
     initializeSinkSource(ALL)
+    waterBalance.hourlyBalance.initialize(waterBalance.currentStep.waterStorage)
 
-    # potential evapotranspiration [mm m-2]
-    waterBalance.hourlyBalance.ET0 = computeHourlyET0(C3DStructure.elevation, airTemperature, globalSWRadiation,
-                                                      airRelHumidity, windSpeed_10m, transmissivity)
+    # potential evapotranspiration [mm m-2 hour-1]
+    potET = computeHourlyET0(C3DStructure.elevation, airTemperature, globalSWRadiation,
+                             airRelHumidity, windSpeed_10m, transmissivity)
+    waterBalance.hourlyBalance.ET0 = potET * C3DStructure.totalArea      # [l hour-1]
 
-    realEvap, realTransp = crop.computeEvapotranspiration(currentDateTime, waterBalance.hourlyBalance.ET0)
-    waterBalance.hourlyBalance.evaporation = realEvap
-    waterBalance.hourlyBalance.transpiration = realTransp
+    realEvap, realTransp = crop.computeEvapotranspiration(currentDateTime, potET)
+    waterBalance.hourlyBalance.evaporation = realEvap * C3DStructure.totalArea          # [l hour-1]
+    waterBalance.hourlyBalance.transpiration = realTransp * C3DStructure.totalArea      # [l hour-1]
 
     initializeSinkSource(ONLY_SURFACE)
-    waterBalance.hourlyBalance.precipitation = precipitation  # [mm hour-1]
+    waterBalance.hourlyBalance.precipitation = precipitation * C3DStructure.totalArea  # [l hour-1]
     setRainfall(precipitation, 3600)
 
     waterBalance.hourlyBalance.irrigation = 0

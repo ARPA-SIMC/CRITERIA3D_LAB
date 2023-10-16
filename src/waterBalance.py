@@ -11,14 +11,16 @@ from soil import getVolumetricWaterContent
 
 class C3DHourlyBalance:
     waterStorage = NODATA       # [m3]
-    precipitation = NODATA      # [mm]
+    boundaryFlow = NODATA       # [m3]
+    precipitation = NODATA      # [l]
     irrigation = NODATA         # [l]
-    ET0 = NODATA                # [mm]
-    evaporation = NODATA        # [mm]
-    transpiration = NODATA      # [mm]
+    ET0 = NODATA                # [l]
+    evaporation = NODATA        # [l]
+    transpiration = NODATA      # [l]
 
     def initialize(self, waterStorage):
         self.waterStorage = waterStorage
+        self.boundaryFlow = 0.0
         self.precipitation = 0.0
         self.irrigation = 0.0
         self.ET0 = 0.0
@@ -108,8 +110,9 @@ def updateStorage():
 def updateBalance(deltaT):
     global totalTime
     totalTime += deltaT
+    hourlyBalance.boundaryFlow += sumBoundaryFlow(deltaT)
+
     previousStep.waterStorage = currentStep.waterStorage
-    hourlyBalance.waterStorage = currentStep.waterStorage
     previousStep.waterFlow = currentStep.waterFlow
     allSimulation.waterFlow += currentStep.waterFlow
     allSimulation.MBE += currentStep.MBE
@@ -126,6 +129,7 @@ def getWaterStorage():
     return waterStorage
 
 
+# [m3]
 def sumBoundaryFlow(deltaT):
     mySum = 0.0
     for i in range(C3DStructure.nrCells):
@@ -135,6 +139,7 @@ def sumBoundaryFlow(deltaT):
     return mySum
 
 
+# [m3]
 def sumSinkSource(deltaT):
     mySum = 0.0
     for i in range(C3DStructure.nrCells):

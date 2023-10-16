@@ -114,7 +114,7 @@ def fPARi(currentLAI):
 
 
 def getMaxEvaporation(currentLAI, ET0):
-    return ET0 * 0.66 * (1. - fPARi(currentLAI))
+    return ET0 * (1. - fPARi(currentLAI))
 
 
 def getMaxTranspiration(currentLAI, kcMax, ET0):

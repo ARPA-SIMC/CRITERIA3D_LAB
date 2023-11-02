@@ -291,6 +291,8 @@ def computeOneHour(obsWeather, obsWater, transmissivity):
 
     if not (np.isnan(obsWeather["air_humidity"])):
         airRelHumidity = obsWeather["air_humidity"]
+        if airRelHumidity <= 1:
+            airRelHumidity *= 100
     else:
         print("Missing data: air_humidity")
         return

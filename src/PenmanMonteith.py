@@ -63,8 +63,13 @@ def computeHourlyET0(height, airTemperature, globalSWRadiation, airRelHumidity,
     pressure = pressureFromAltitude(height) / 1000.
     # saturation vapor pressure [kPa] 
     satVapPressure = saturationVaporPressure(airTemperature) / 1000.
-    # current vapor pressure [kPa] 
+
+    # current vapor pressure [kPa]
     vaporPressure = satVapPressure * (airRelHumidity / 100.)
+    if airRelHumidity <= 1:
+        # fraction value
+        vaporPressure = satVapPressure * airRelHumidity
+
     # net emissivity of the surface [-]
     emissivity = 0.34 - 0.14 * math.sqrt(vaporPressure)
     # cloudiness factor for long wave radiation [-]

@@ -43,7 +43,8 @@ def updateBoundary(deltaT):
                 dzy = C3DStructure.slopeY * C3DCells[i].y
                 prescribedH = C3DStructure.elevation - dzy + C3DParameters.waterTableDepth
                 dH = prescribedH - C3DCells[i].H
-                C3DCells[i].boundary.flow = C3DCells[i].k * dH/0.1 * C3DCells[i].area
+                dL = 0.1        # distance from boundary [m]
+                C3DCells[i].boundary.flow = C3DCells[i].k * dH/dL * C3DCells[i].area
 
             C3DCells[i].flow += C3DCells[i].boundary.flow
 

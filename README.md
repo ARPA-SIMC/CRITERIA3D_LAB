@@ -1,5 +1,5 @@
 # CRITERIA3D Lab
-Python version of CRITERIA-3D agro-hydrological model, allows to configure 1D, 2D and 3D hydrological experiments.  
+Python version of CRITERIA-3D agro-hydrological model, it allows to configure 1D, 2D and 3D hydrological experiments.  
 - Numerical solution for three-dimensional water flow in the soil, with management of different soil horizons.  
 - Soil water retention curves: Campbell, modified Van Genucthen.  
 - Sink/source: evapotranspiration, precipitation, drip irrigation.  

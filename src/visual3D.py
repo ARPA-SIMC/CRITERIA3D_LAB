@@ -108,7 +108,7 @@ def initialize(totalWidth):
                               pos=visual.vector(cX, cY, cZ + (rangeZ * 0.2)))
 
     sliceCanvas.caption = " *** COMMANDS ***\n"
-    sliceCanvas.caption += "\n '^': move up (soil layer) \n 'v': move down (soil layer) "
+    sliceCanvas.caption += "\n '^': move up (surface / soil layer) \n 'v': move down (surface / soil layer) "
     sliceCanvas.caption += "\n '<': move left (soil slice) \n '>': move right (soil slice) "
     sliceCanvas.caption += "\n\n 'r': Run simulation \n 'p': Pause "
     sliceCanvas.caption += "\n 'e': compute hydrostatic Equilibrium"

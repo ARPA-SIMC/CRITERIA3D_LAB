@@ -53,17 +53,20 @@ def infiltration(surf, sub, link, deltaT, isFirstApprox):
 
 def runoff(i, link, deltaT):
     j = link.index
-    dH = fabs(C3DCells[i].H - C3DCells[j].H)
+    avg_H_i = (C3DCells[i].H + C3DCells[i].H0) * 0.5
+    avg_H_j = (C3DCells[j].H + C3DCells[j].H0) * 0.5
+
+    dH = fabs(avg_H_i - avg_H_j)
     if dH < EPSILON_METER:
         return 0.
 
+    maxH = max(avg_H_i, avg_H_j)
     maxZ = max(C3DCells[i].z, C3DCells[j].z)
-    maxH = max((C3DCells[i].H + C3DCells[i].H0) * 0.5, (C3DCells[j].H + C3DCells[j].H0) * 0.5)
     Hs = maxH - (maxZ + C3DParameters.pond)
     if Hs <= EPSILON_METER:
         return 0.
 
-    # pond
+    # pond (disabled - slow runoff)
     #Hs = min(Hs, dH)
 
     # [m/s] Manning equation
@@ -72,5 +75,6 @@ def runoff(i, link, deltaT):
     waterBalance.maxCourant = max(waterBalance.maxCourant, Courant)
 
     # link.area on surface = side length [m]
-    area = link.area * Hs 
+    area = link.area * Hs
+    dH = fabs(C3DCells[i].H - C3DCells[j].H)
     return (v / dH) * area

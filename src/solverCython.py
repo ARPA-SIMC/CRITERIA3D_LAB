@@ -59,10 +59,12 @@ def computeStep(deltaT):
 
             arrangeMatrix(i, deltaT, C3DCells[i].H0, C3DCells[i].flow)
 
+        waterBalance.maxCourant *= 0.5
         if (waterBalance.maxCourant > 1.0) and (deltaT > C3DParameters.deltaT_min):
             # print("Courant too high:", waterBalance.maxCourant)
             # print("Decrease time step")
-            waterBalance.halveTimeStep()
+            newDeltaT = int(C3DParameters.currentDeltaT / waterBalance.maxCourant * 10.) / 10.
+            C3DParameters.currentDeltaT = max(newDeltaT, C3DParameters.deltaT_min)
             return False
 
         if not solveMatrix(approximation):

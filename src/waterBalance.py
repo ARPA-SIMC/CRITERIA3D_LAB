@@ -69,8 +69,7 @@ def halveTimeStep():
         else:
             return False
     else:
-        C3DParameters.currentDeltaT = max(C3DParameters.currentDeltaT * 0.5,
-                                          C3DParameters.deltaT_min)
+        C3DParameters.currentDeltaT = max(C3DParameters.currentDeltaT * 0.5, C3DParameters.deltaT_min)
     return True
 
 
@@ -174,7 +173,7 @@ def computeBalanceError(deltaT):
 
 
 def waterBalance(deltaT, approximation):
-    global forceExit, bestMBR, nrMBRWrong
+    global forceExit, bestMBR, nrMBRWrong, maxCourant
     computeBalanceError(deltaT)
 
     if approximation == 1:
@@ -185,7 +184,7 @@ def waterBalance(deltaT, approximation):
     # case 1: step accepted
     if currentStep.MBR < C3DParameters.MBRThreshold:
         updateBalance(deltaT)
-        if approximation < 3 and maxCourant < 0.3 and currentStep.MBR < (C3DParameters.MBRThreshold * 0.5) \
+        if approximation < 3 and maxCourant < 0.5 and currentStep.MBR < (C3DParameters.MBRThreshold * 0.5) \
                 and C3DParameters.currentDeltaT < C3DParameters.currentDeltaT_max:
             # print("Good MBR!")
             doubleTimeStep()
@@ -194,7 +193,7 @@ def waterBalance(deltaT, approximation):
     # case 2: continue with next approximation
     if approximation == 1 or currentStep.MBR < bestMBR:
         bestMBR = currentStep.MBR
-    else:
+    elif currentStep.MBR > bestMBR * 2.0:
         nrMBRWrong += 1
 
     # case 3: decrease time step (or increase threshold)

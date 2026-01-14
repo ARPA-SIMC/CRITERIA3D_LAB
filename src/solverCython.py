@@ -96,7 +96,7 @@ def newMatrixElement(i, link, k, isLateral, deltaT, isFirstApprox):
 
     if C3DCells[i].isSurface and C3DCells[j].isSurface:
         if C3DParameters.computeSurfaceFlow:
-            value = runoff(i, link, deltaT, isFirstApprox)
+            value = runoff(i, link, deltaT)
         else:
             value = 0.0
     elif C3DCells[i].isSurface or C3DCells[j].isSurface:

@@ -28,17 +28,21 @@ def redistribution(i, link, isLateral):
 def infiltration(surf, sub, link, deltaT, isFirstApprox):
     if C3DCells[surf].z > C3DCells[sub].H:
         # unsaturated
-        avgH = (C3DCells[surf].H + C3DCells[surf].H0) * 0.5
-        psi = avgH - C3DCells[surf].z
+        avgSurfH = (C3DCells[surf].H + C3DCells[surf].H0) * 0.5
+        surfaceWater = max(avgSurfH - C3DCells[surf].z, 0.)
+
+        rain = (C3DCells[surf].sinkSource / C3DCells[surf].area) * deltaT
         if isFirstApprox:
-            rain = (C3DCells[surf].sinkSource / C3DCells[surf].area) * (deltaT * 0.5)
-            psi += rain
-        if psi < EPSILON:
+            surfaceWater += rain
+        else:
+            surfaceWater += rain * 0.5
+
+        if surfaceWater < EPSILON:
             return 0.0
         
         interfaceK = meanK(C3DParameters.conductivityMean, C3DCells[sub].k, soil.horizons[0].Ks)
         dH = C3DCells[surf].H - C3DCells[sub].H
-        maxK = (psi / deltaT) * (link.distance / dH)
+        maxK = (surfaceWater / deltaT) * (link.distance / dH)
         k = min(interfaceK, maxK)
     else:
         # saturated
@@ -47,20 +51,21 @@ def infiltration(surf, sub, link, deltaT, isFirstApprox):
     return (k * link.area) / link.distance
 
 
-def runoff(i, link, deltaT, isFirstApprox):
+def runoff(i, link, deltaT):
     j = link.index
     dH = fabs(C3DCells[i].H - C3DCells[j].H)
     if dH < EPSILON_METER:
         return 0.
 
     maxZ = max(C3DCells[i].z, C3DCells[j].z)
-    # maxH = max(C3DCells[i].H, C3DCells[j].H)
     maxH = max((C3DCells[i].H + C3DCells[i].H0) * 0.5, (C3DCells[j].H + C3DCells[j].H0) * 0.5)
     Hs = maxH - (maxZ + C3DParameters.pond)
     if Hs <= EPSILON_METER:
         return 0.
+
     # pond
-    Hs = min(Hs, dH)
+    #Hs = min(Hs, dH)
+
     # [m/s] Manning equation
     v = (pow(Hs, 2.0 / 3.0) * sqrt(dH/link.distance)) / C3DParameters.roughness
     Courant = v * deltaT / link.distance

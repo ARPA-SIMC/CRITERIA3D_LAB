@@ -20,9 +20,12 @@ from transmissivity import computeNormTransmissivity
 
 
 def main():
+    projectName = "test3D"
+    soilName = "soil.csv"
+
     # path
     print(os.getcwd())
-    projectPath = os.path.join("..\\data", "test2D")
+    projectPath = os.path.join("..\\data", projectName)
     settingsFolder = os.path.join(projectPath, "settings")
     weatherFolder = os.path.join(projectPath, "meteo")
     obsDataFolder = os.path.join(projectPath, "obs_data")
@@ -40,7 +43,7 @@ def main():
         return
 
     print("read soil properties...")
-    soilSettings = os.path.join(settingsFolder, "soilNT.csv")
+    soilSettings = os.path.join(settingsFolder, soilName)
     if not soil.readHorizon(soilSettings):
         return
     if C3DStructure.gridDepth > soil.horizons[len(soil.horizons)-1].lowerDepth:

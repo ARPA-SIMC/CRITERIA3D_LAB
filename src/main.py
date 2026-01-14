@@ -40,7 +40,7 @@ def main():
         return
 
     print("read soil properties...")
-    soilSettings = os.path.join(settingsFolder, "soil.csv")
+    soilSettings = os.path.join(settingsFolder, "soilNT.csv")
     if not soil.readHorizon(soilSettings):
         return
     if C3DStructure.gridDepth > soil.horizons[len(soil.horizons)-1].lowerDepth:

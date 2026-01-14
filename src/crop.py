@@ -11,7 +11,7 @@ import soil
 import rectangularMesh
 import numpy as np
 
-MAX_EVAPORATION_DEPTH = 0.15  # [m]
+MAX_EVAPORATION_DEPTH = 0.2  # [m]
 
 
 class CCrop:
